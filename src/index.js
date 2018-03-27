@@ -66,13 +66,59 @@
 //   document.body.appendChild(component)
 // })
 
-async function getComponent() {
-  const _ = await import(/* webpackChunkName: "lodash" */'lodash')
-  var element = document.createElement('div');
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-  return element;
-}
-   getComponent().then(component => {
-     document.body.appendChild(component);
-   })
+// async function getComponent() {
+//   const _ = await import(/* webpackChunkName: "lodash" */'lodash')  /*注释的内容必须存在，表示异步加载的块名*/
+//   var element = document.createElement('div');
+//   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+//   return element;
+// }
+//    getComponent().then(component => {
+//      document.body.appendChild(component);
+//    })
   
+
+// import _ from 'lodash'
+
+// function component () {
+//   const element = document.createElement('div')
+//   const button = document.createElement('button')
+//   const br = document.createElement('br')
+//   button.innerHTML = 'click'
+//   element.appendChild(button)
+//   element.appendChild(br)
+
+//   button.onclick = e => import(/* webpackChunkName: 'print' */ './print').then(module => {
+//     const print = module.default
+//     print()
+//   })
+//   return element
+// }
+
+// document.body.appendChild(component())
+
+// import _ from 'lodash'
+// import numRef from './ref.json'
+
+// export function numToWord(num) {
+//   return _.reduce(numRef, (accum, ref) => {
+//     return ref.num === num? ref.word: accum
+//   }, '')
+// }
+
+// export function wordToNum(word) {
+//   return _.reduce(numRef, (accum, ref) => {
+//     return ref.word === word && word.toLowerCase()? ref.num: accum
+//   }, -1)
+// }
+
+// import {file, parse} from './globals.js'
+// import 'babel-polyfill';
+function component () {
+  let element = document.createElement('div')
+  // element.innerHTML = _.join(['HELLO', 'WORLD', file, ''])
+  element.innerHTML = 'HELLO WORLD'
+  this.alert('Hmmm, this probably isn\'t a great idea...')
+
+  return element
+}
+document.body.appendChild(component())

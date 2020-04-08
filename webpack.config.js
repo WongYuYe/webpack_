@@ -1,6 +1,11 @@
 
 const { resolve } = require('path')
+const htmlWebpackPlugin = require('html-webpack-plugin')
 
+/*
+  loader: 1.下载 2.配置
+  plugin: 1.下载 2.引入 3.配置
+*/
 module.exports = {
   // 入口起点
   entry: './src/index.js',
@@ -42,11 +47,38 @@ module.exports = {
           // 将less文件编译成css文件
           'less-loader'
         ]
+      },
+      {
+        test: /\.(jpg|jpeg|png|gif)/,
+        loader: 'url-loader',
+        options: {
+          // 图片大小小于3kb，会以base64格式处理
+          // 优点：减少请求
+          // 缺点：体积更大
+          limit: 3 * 1024,
+          // url-loader默认使用es6模块解析，而html-loader默认使用commonjs引入图片
+          // 解析会出现问题： [Object Module]
+          // 解决：关闭es6模块化，使用commonjs
+          // 最新html-loader版本已解决此问题
+          // esModule: false,
+
+          name: '[hash:10].[ext]'
+        }
+      },
+      {
+        test: /\.html$/,
+        // 处理html中的img标签，引入Img，给url-loader处理
+        loader: 'html-loader'
       }
     ]
   },
   plugins: [
     // 详细plugins的配置
+    // html-webpack-plugin
+    // 默认会创建一个空的html，自动引入打包输出的所有资源
+    new htmlWebpackPlugin({
+      template: './src/index.html'
+    })
   ],
   mode: 'development'
 }

@@ -1,137 +1,52 @@
-// const path = require('path')
-// const webpack = require('webpack')
-// const HtmlWebpackPlugin = require('html-webpack-plugin')
-// const CleanWebpackPlugin = require('clean-webpack-plugin')
-// const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
-
-// module.exports = {
-//   // entry: './src/index.js',
-//   entry: {
-//     // app: './src/index.js',
-//     // print: './src/print.js',
-//     app: './src/index.js',
-//     vendor: [
-//       'lodash'
-//     ]
-//     // another: './src/another-module.js'
-//   },
-//   mode: 'development',
-//   // devtool: 'inline-source-map',
-//   // devServer: {
-//   //   contentBase: './dist',
-//   //   hot: true
-//   // },
-//   plugins: [
-//     // new CleanWebpackPlugin(['dist']),
-//     new HtmlWebpackPlugin({
-//       title: 'Authoring Libraries'
-//     }),
-//     // new webpack.NamedModulesPlugin(),
-//     // new webpack.HotModuleReplacementPlugin(),
-//     // new UglifyJSPlugin()
-//     new webpack.HashedModuleIdsPlugin() /*该插件用于缓存一些不常改动的资源，如lodash等库*/
-//   ],
-//   optimization: {
-//     splitChunks: {
-//       chunks: 'all',
-//       name: 'vendor'
-//     }
-//   },
-//   output: {
-//     filename: '[name].[chunkhash].js',
-//     // chunkFilename: '[name].bundle.js',
-//     path: path.resolve(__dirname, 'dist'),
-//     publicPath: '/'
-//   },
-//   module: {
-//     rules: [
-//       {
-//         test: /\.css$/,
-//         use: [
-//           'style-loader',
-//           'css-loader'
-//         ]
-//       },
-//       {
-//         test: /\.(png|svg|jpg|gif)$/,
-//         use: [
-//           'file-loader'
-//         ]
-//       },
-//       {
-//         test: /\.(woff|woff2|eot|ttf|otf)$/,
-//         use: [
-//           'file-loader'
-//         ]
-//       },
-//       {
-//         test: /\.(csv|tsv)$/,
-//         use: [
-//           'csv-loader'
-//         ]
-//       },
-//       {
-//         test: /\.xml$/,
-//         use: [
-//           'xml-loader'
-//         ]
-//       }
-//     ]
-//   }
-// }
-
-// const path = require('path')
-// module.exports = {
-//   entry: './src/index.js',
-//   output: {
-//     path: path.resolve(__dirname, 'dist'),
-//     filename: 'webpack-numbers.js',
-//     library: 'webpackNumbers',
-//     libraryTarget: 'umd'
-//   },
-//   mode: 'production',
-//   externals: {
-//     lodash: {
-//       commonjs: 'lodash',
-//       commonjs2: 'lodash',
-//       amd: 'lodash',
-//       root: '_'
-//     }
-//   }
-// }
-const path = require('path')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
-
-const webpack = require('webpack')
+const { resolve } = require('path')
 
 module.exports = {
-  entry: {
-    app: './src/index.js',
-    polyfill: './src/polyfills.js'
-  },
+  // 入口起点
+  entry: './src/index.js',
+
+  // 输出
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    // 输出文件名
+    filename: 'built.js',
+    // 输出路径
+    // __dirname nodejs的变量，代表当前文件的目录绝对路径
+    path: resolve(__dirname, 'build')
   },
-  mode: 'production',
-  plugins: [
-    new webpack.ProvidePlugin({
-      _: 'lodash'
-      // join: ['lodash', 'join']
-    }),
-    new CleanWebpackPlugin(['dist'])
-  ],
+  // loader的配置
   module: {
     rules: [
+      // 详细loader配置
       {
-        test: require.resolve('./src/index.js'),
-        use: 'imports-loader?this=>window'
+        // 匹配哪些文件
+        test: /\.css$/,
+        // 使用哪些loader进行处理
+        use: [
+          // 数组中loader执行顺序：从右到左，从下到上依次执行
+          // 创建style标签，将js中的样式资源插入进去，添加到head中生效
+          'style-loader',
+          // 将css文件变成commonjs模块加载Js中，里面内容是样式字符串
+          'css-loader'
+        ]
       },
       {
-        test: require.resolve('./src/globals.js'),
-        use: 'exports-loader?file,parse=helpers.parse'
+        // 匹配哪些文件
+        test: /\.less$/,
+        // 使用哪些loader进行处理
+        use: [
+          // 数组中loader执行顺序：从右到左，从下到上依次执行
+          // 创建style标签，将js中的样式资源插入进去，添加到head中生效
+          'style-loader',
+          // 将css文件变成commonjs模块加载Js中，里面内容是样式字符串
+          'css-loader',
+          // 将less文件编译成css文件
+          'less-loader'
+        ]
       }
     ]
-  }
+  },
+  plugins: [
+    // 详细plugins的配置
+  ],
+  mode: 'development'
 }

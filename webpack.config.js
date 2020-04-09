@@ -1,13 +1,27 @@
-const { resolve } = require("path");
-const HtmlWebapckPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+const { resolve } = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+const commonCssLoader = [
+  // 'style-loader',
+  MiniCssExtractPlugin.loader,
+  'css-loader',
+  {
+    loader: 'postcss-loader',
+    options: {
+      ident: 'postcss',
+      plugins: () => [
+        require('postcss-preset-env')()
+      ]
+    }
+  }
+]
 module.exports = {
-  entry: "./src/index.js",
+  entry: './src/index.js',
 
   output: {
-    filename: "js/built.js",
-    path: resolve(__dirname, "build"),
+    filename: 'js/built.js',
+    path: resolve(__dirname, 'build')
   },
 
   module: {
@@ -15,77 +29,83 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          // "style-loader",
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          /*
-            css兼容性 postcss -> postcss-loader postcss-preset-env
-
-            配置在package.json中，表示浏览器兼容性列表
-            browserslist: {
-              'development': [
-                'last 1 chorme version',
-                'last 1 firefox version',
-                'last 1 safari version',
-              ],
-              'production': [
-                '> 0.2%',
-                'not dead',
-              ]
-            }
-          */
-          {
-            loader: 'postcss-loader',
-            options: {
-              ident: 'postcss',
-              plugins: () => [
-                require('postcss-preset-env')()
-              ]
-            }
-          },
-        ],
+          ...commonCssLoader
+        ]
       },
       {
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+        use: [
+          ...commonCssLoader,
+          'less-loader'
+        ]
       },
       {
-        test: /\.(jpg|png|gif)/,
-        loader: "url-loader",
-        options: {
-          limit: 2 * 1024,
-          name: "[hash:10].[ext]",
-          outputPath: "../imgs",
-        },
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    useBuiltIns: 'usage',
+                    corejs: { version: 3 },
+                    targets: {
+                      chrome: '50',
+                      firefox: '50'
+                    }
+                  }
+                ]
+              ]
+            },
+          },
+          {
+            loader: 'eslint-loader',
+            options: {
+              formatter: require('eslint-friendly-formatter'),
+              fix: true
+            }
+          }
+        ]
       },
       {
         test: /\.html$/,
-        loader: "html-loader",
+        loader: 'html-loader'
       },
       {
-        exclude: /\.(jpg|png|html|js|css|less)/,
-        loader: "file-loader",
+        test: /\.(jpg|png|gif)$/,
+        loader: 'url-loader',
         options: {
           limit: 2 * 1024,
-          name: "[hash:10].[ext]",
-          outputPath: "medias",
-        },
+          name: '[hash:10].[ext]',
+          outputPath: 'imgs',
+          // esModule: false,
+        }
       },
-    ],
+      {
+        exclude: /\.(jpg|png|gif|html|js|css|less)$/,
+        loader: 'file-loader',
+        options: {
+          outputPath: 'medias'
+        }
+      }
+    ]
   },
   plugins: [
-    new HtmlWebapckPlugin({
-      template: "./src/index.html",
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+      }
     }),
     new MiniCssExtractPlugin({
-      filename: "./css/built.css",
+      filename: 'css/built.css',
+      path: resolve(__dirname, 'build')
     }),
+    new OptimizeCssAssetsWebpackPlugin()
   ],
-  mode: "development",
-  devServer: {
-    port: 3000,
-    open: true,
-    contentBase: resolve(__dirname, "build"),
-    compress: true,
-  },
-};
+  mode: 'production'
+}

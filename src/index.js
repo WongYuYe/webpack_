@@ -9,16 +9,16 @@
     2. 生产环境和开发环境将ES6模块化编译编译成浏览器能识别的模块化
     3. 生产环境比开发环境多一个压缩js代码
 */
-// import data from './data.json'
-// console.log(data);
+import data from './assets/data.json'
+console.log(data);
 
-// import './index.css'
-// import './index.less'
-
-// function add(x, y) {
-//   return x + y
-// }
-// console.log(add(1, 2));
-
-
+import './assets/index.css'
+import './assets/index.less'
 import './assets/iconfont.css'
+
+function add(x, y) {
+  return x + y
+}
+console.log(add(1, 2));
+
+

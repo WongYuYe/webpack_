@@ -18,6 +18,31 @@ module.exports = {
           // "style-loader",
           MiniCssExtractPlugin.loader,
           "css-loader",
+          /*
+            css兼容性 postcss -> postcss-loader postcss-preset-env
+
+            配置在package.json中，表示浏览器兼容性列表
+            browserslist: {
+              'development': [
+                'last 1 chorme version',
+                'last 1 firefox version',
+                'last 1 safari version',
+              ],
+              'production': [
+                '> 0.2%',
+                'not dead',
+              ]
+            }
+          */
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [
+                require('postcss-preset-env')()
+              ]
+            }
+          },
         ],
       },
       {
@@ -53,7 +78,7 @@ module.exports = {
       template: "./src/index.html",
     }),
     new MiniCssExtractPlugin({
-      filename: './css/built.css'
+      filename: "./css/built.css",
     }),
   ],
   mode: "development",

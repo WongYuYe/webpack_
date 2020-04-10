@@ -4,7 +4,7 @@ import './assets/iconfont.css';
 
 import add from './add';
 
-console.log(add(1, 2));
+console.log(add(1, 2))();
 
 // const add = (x, y) => x + y;
 // add(1, 2);

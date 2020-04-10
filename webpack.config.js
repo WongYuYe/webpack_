@@ -19,77 +19,87 @@ const commonCssLoader = [
 module.exports = {
   entry: ['./src/index.js', './src/index.html'],
 
+  /* 缓存
+    hash：根据文件
+    chunkHash: 根据块
+    contentHash：根据内容
+  */  
   output: {
-    filename: 'js/built.js',
+    filename: 'js/built.[contentHash:10].js',
     path: resolve(__dirname, 'build')
   },
 
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [
-          ...commonCssLoader
-        ]
-      },
-      {
-        test: /\.less$/,
-        use: [
-          ...commonCssLoader,
-          'less-loader'
-        ]
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: [
+        oneOf: [
           {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                [
-                  '@babel/preset-env',
-                  {
-                    useBuiltIns: 'usage',
-                    corejs: { version: 3 },
-                    targets: {
-                      chrome: '50',
-                      firefox: '50'
-                    }
-                  }
-                ]
-              ]
-            },
+            test: /\.css$/,
+            use: [
+              ...commonCssLoader
+            ]
           },
           {
-            loader: 'eslint-loader',
+            test: /\.less$/,
+            use: [
+              ...commonCssLoader,
+              'less-loader'
+            ]
+          },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: [
+              {
+                loader: 'babel-loader',
+                options: {
+                  presets: [
+                    [
+                      '@babel/preset-env',
+                      {
+                        useBuiltIns: 'usage',
+                        corejs: { version: 3 },
+                        targets: {
+                          chrome: '50',
+                          firefox: '50'
+                        }
+                      }
+                    ]
+                  ],
+                  cacheDirectory: true,
+                },
+              },
+              {
+                loader: 'eslint-loader',
+                options: {
+                  formatter: require('eslint-friendly-formatter'),
+                  fix: true
+                }
+              }
+            ]
+          },
+          {
+            test: /\.html$/,
+            loader: 'html-loader'
+          },
+          {
+            test: /\.(jpg|png|gif)$/,
+            loader: 'url-loader',
             options: {
-              formatter: require('eslint-friendly-formatter'),
-              fix: true
+              limit: 2 * 1024,
+              name: '[hash:10].[ext]',
+              outputPath: 'imgs',
+              // esModule: false,
+            }
+          },
+          {
+            exclude: /\.(jpg|png|gif|html|js|css|less)$/,
+            loader: 'file-loader',
+            options: {
+              outputPath: 'medias'
             }
           }
         ]
-      },
-      {
-        test: /\.html$/,
-        loader: 'html-loader'
-      },
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 2 * 1024,
-          name: '[hash:10].[ext]',
-          outputPath: 'imgs',
-          // esModule: false,
-        }
-      },
-      {
-        exclude: /\.(jpg|png|gif|html|js|css|less)$/,
-        loader: 'file-loader',
-        options: {
-          outputPath: 'medias'
-        }
       }
     ]
   },
@@ -102,7 +112,7 @@ module.exports = {
       }
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/built.css',
+      filename: 'css/built.[contentHash:10].css',
       path: resolve(__dirname, 'build')
     }),
     new OptimizeCssAssetsWebpackPlugin()
@@ -121,5 +131,7 @@ module.exports = {
         html: 一般只有一个入口index.html文件
     */
     hot: true,
-  }
+  },
+  // [inline-|hidden-|eval-][nosources-][cheap-[module-]]source-map
+  devtool: 'eval-source-map'
 }

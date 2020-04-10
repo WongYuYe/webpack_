@@ -17,7 +17,7 @@ const commonCssLoader = [
   }
 ]
 module.exports = {
-  entry: './src/index.js',
+  entry: ['./src/index.js', './src/index.html'],
 
   output: {
     filename: 'js/built.js',
@@ -107,5 +107,19 @@ module.exports = {
     }),
     new OptimizeCssAssetsWebpackPlugin()
   ],
-  mode: 'production'
+  mode: 'production',
+  devServer: {
+    port: 3000,
+    contentBase: resolve(__dirname, 'build'),
+    open: true,
+    compress: true,
+    /*
+      HMR：hot module replacement 模块热重载
+        作用：只替换当前修改的模块
+        css: 依赖style-loader实现HMR
+        js: 只针对于非入口js的文件，利用module.hot.accept('./xx.js', function(){})
+        html: 一般只有一个入口index.html文件
+    */
+    hot: true,
+  }
 }

@@ -1,7 +1,7 @@
 html, body {
   padding: 0;
   margin: 0;
-  background-color: pink;
+  background-color: blue;
   display: flex;
   -webkit-box-orient: vertical;
   backface-visibility: visible;

@@ -13,6 +13,7 @@
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
     "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "core-js": "^3.6.4",
     "css-loader": "^3.5.1",
     "eslint": "^6.8.0",
@@ -33,7 +34,8 @@
     "url-loader": "^4.0.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "workbox-webpack-plugin": "^5.1.2"
   },
   "browserslist": {
     "development": [
@@ -46,7 +48,14 @@
       "not dead"
     ]
   },
+  "sideEffects": [
+    "*.css",
+    "*.less"
+  ],
   "eslintConfig": {
-    "extends": "airbnb-base"
+    "extends": "airbnb-base",
+    "env": {
+      "browser": true
+    }
   }
 }

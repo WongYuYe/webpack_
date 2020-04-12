@@ -2,6 +2,10 @@ const { resolve } = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
+
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 const commonCssLoader = [
   // 'style-loader',
   MiniCssExtractPlugin.loader,
@@ -17,15 +21,30 @@ const commonCssLoader = [
   }
 ]
 module.exports = {
-  entry: ['./src/index.js', './src/index.html'],
+  // 单入口
+  entry: './src/index.js',
+  // 多入口
+  // entry: {
+  //   index: './src/index.js',
+  //   add: './src/add.js'
+  // }
 
+  /*
+    1. 可以将node_modules中代码单独打包一个chunk输出
+    2. 自动分析多入口chunk中，有没有公共的文件。如果有单独打包成一个chunk
+  */
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
   /* 缓存
     hash：根据文件
     chunkHash: 根据块
     contentHash：根据内容
   */  
   output: {
-    filename: 'js/built.[contentHash:10].js',
+    filename: 'js/[name].[contentHash:10].js',
     path: resolve(__dirname, 'build')
   },
 
@@ -104,6 +123,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin({
+      outputPath: 'build'
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       minify: {
@@ -115,7 +137,16 @@ module.exports = {
       filename: 'css/built.[contentHash:10].css',
       path: resolve(__dirname, 'build')
     }),
-    new OptimizeCssAssetsWebpackPlugin()
+    new OptimizeCssAssetsWebpackPlugin(),
+    new WorkboxWebpackPlugin.GenerateSW({
+      /*
+        1.帮助serviceWorker快速启动
+        2.删除旧的serviceWorker
+        生成一个serviceWorker配置文件
+      */
+      clientsClaim: true,
+      skipWaiting: true
+    })
   ],
   mode: 'production',
   devServer: {
@@ -133,5 +164,17 @@ module.exports = {
     hot: true,
   },
   // [inline-|hidden-|eval-][nosources-][cheap-[module-]]source-map
-  devtool: 'eval-source-map'
+  devtool: 'hidden-source-map',
+
+  /*
+    tree-shaking: 去除无用代码
+      开启条件：1. 必须使用es6模块化 2. 开启production环境
+      作用：减少代码体积
+
+      在package.json中设置
+        "sideEffects": false 所有代码都可以进行tree shaking
+          存在问题：可能会把 css @babel/polyfill文件干掉
+
+        "sideEffects": ["*.css", "*.less"] 排除文件
+  */
 }

@@ -1,8 +1,12 @@
-import './assets/index.less';
-import './assets/index.css';
-import './assets/iconfont.css';
+// import './assets/index.less';
+// import './assets/index.css';
+// import './assets/iconfont.css';
 
 // import { add } from './add';
+// import ElementUI from 'element-ui';
+
+// console.log('ElementUI', ElementUI);
+
 
 /*
   按需加载

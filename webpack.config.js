@@ -6,6 +6,11 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
+
+const webpack = require('webpack')
+
+const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin')
+
 const commonCssLoader = [
   // 'style-loader',
   MiniCssExtractPlugin.loader,
@@ -69,6 +74,17 @@ module.exports = {
             test: /\.js$/,
             exclude: /node_modules/,
             use: [
+              /*
+                开启多进程打包
+                缺点：开启进程需要600ms时间，进程通信也需要消耗，
+                针对于babel，当js代码较多时，可开启
+              */
+              // {
+              //   loader: 'thread-loader',
+              //   options: {
+              //     workers: 2
+              //   }
+              // },
               {
                 loader: 'babel-loader',
                 options: {
@@ -146,6 +162,14 @@ module.exports = {
       */
       clientsClaim: true,
       skipWaiting: true
+    }),
+    // 告诉webpack哪些库不参与打包，同时引用时名称也需要修改
+    new webpack.DllReferencePlugin({
+      manifest: resolve(__dirname, 'dll/manifest.json')
+    }),
+    // 将某个文件打包输出，并在html中自动引入
+    new AddAssetHtmlWebpackPlugin({
+      filepath: resolve(__dirname, 'dll/jquery.js')
     })
   ],
   mode: 'production',
@@ -177,4 +201,10 @@ module.exports = {
 
         "sideEffects": ["*.css", "*.less"] 排除文件
   */
+
+
+  externals: {
+    // 忽略包 -> npm包，打包的时候会忽略
+    jquery: 'jQuery'
+  }
 }

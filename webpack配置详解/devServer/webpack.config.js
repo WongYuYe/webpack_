@@ -17,6 +17,7 @@ module.exports = {
     new HtmlWebpackPlugin()
   ],
   mode: "development",
+  
   devServer: {
     // 服务内容路径，只有当你想要提供静态文件时必需
     contentBase: resolve(__dirname, 'build'),

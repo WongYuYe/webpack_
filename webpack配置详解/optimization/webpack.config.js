@@ -44,7 +44,7 @@ module.exports = {
       cacheGroups: {
         // node_modules的包会被打包到vendor~xx.js
         vendor: {
-          test:/[\\/]node_modules[\\/]/, // 匹配路径
+          test:/[\\/]node_modules[\\/]/, // 匹配路径 \\/  they always contain / on Unix systems and \ on Windows，系统差异
           priority: -10,  // 优先级
         },
         default: {
